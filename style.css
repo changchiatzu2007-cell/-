@@ -1,18 +1,19 @@
 :root{
-  --bg:#0b0d12;
-  --card:#121626;
-  --text:#e8ecff;
-  --muted:#b5bddb;
-  --line:rgba(255,255,255,.10);
+  --bg:#f6f8fc;        /* 主背景：淡灰藍 */
+  --card:#ffffff;     /* 卡片：純白 */
+  --text:#1f2937;     /* 主文字：深灰 */
+  --muted:#6b7280;    /* 次要文字 */
+  --line:rgba(0,0,0,.08);
   --radius:18px;
 }
-*{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:system-ui,-apple-system,"Noto Sans TC",Segoe UI,Arial,sans-serif;
-  background: radial-gradient(1200px 600px at 20% 0%, #1a2040 0%, var(--bg) 55%);
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
   color:var(--text);
 }
+
 .wrap{width:min(980px,92vw);margin:0 auto}
 
 .header{
@@ -102,14 +103,16 @@ h1{margin:0 0 10px; font-size:26px}
   font-size:42px;
   font-weight:900;
   letter-spacing:1px;
-  color:#e6ebff;   /* 柔白，不刺眼 */
+  color:#1e3a8a; /* 溫和藍，像課本 */
 }
+
 
 .sub{
   margin-top:6px;
   font-size:14px;
-  color:#9fb0ff;
+  color:#475569;
 }
+
 
 
 .status{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap}
@@ -137,4 +140,5 @@ h1{margin:0 0 10px; font-size:26px}
   border-color: rgba(143,232,255,.85);
   background: rgba(143,232,255,.14);
 }
+
 
