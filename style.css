@@ -1,11 +1,18 @@
 :root{
-  --bg:#f6f8fc;        /* 主背景：淡灰藍 */
-  --card:#ffffff;     /* 卡片：純白 */
-  --text:#1f2937;     /* 主文字：深灰 */
-  --muted:#6b7280;    /* 次要文字 */
-  --line:rgba(0,0,0,.08);
+  --bg:#f5f7fb;            /* 背景：雲霧白 */
+  --panel:#ffffff;         /* 卡片/面板：純白 */
+  --header:rgba(255,255,255,.82); /* header 半透明白 */
+  --text:#0f172a;          /* 主文字：深海軍藍 */
+  --muted:#475569;         /* 次要文字：石板灰 */
+  --line:rgba(15,23,42,.10);
   --radius:18px;
+
+  --brand:#1e3a8a;         /* 主色：海軍藍 */
+  --brand2:#2563eb;        /* 輔色：亮藍 */
+  --accent:rgba(37,99,235,.16);   /* 選取底色 */
+  --shadow:0 18px 50px rgba(15,23,42,.10);
 }
+
 
 body{
   margin:0;
@@ -139,6 +146,107 @@ h1{margin:0 0 10px; font-size:26px}
 .letter.playing{
   border-color: rgba(143,232,255,.85);
   background: rgba(143,232,255,.14);
+}
+
+/* ===== 背景與整體 ===== */
+body{
+  background:
+    radial-gradient(900px 500px at 20% 0%, rgba(37,99,235,.10) 0%, transparent 60%),
+    radial-gradient(800px 460px at 80% 10%, rgba(30,58,138,.08) 0%, transparent 55%),
+    linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
+  color:var(--text);
+}
+
+/* ===== Header：不要灰霧，改成清爽玻璃白 ===== */
+.header{
+  background: var(--header);
+  border-bottom:1px solid var(--line);
+  backdrop-filter: blur(12px);
+}
+
+.brand{
+  color: var(--text);
+  font-weight: 900;
+}
+
+/* 按鈕與控制區更精緻 */
+.btn{
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.72);
+  color: var(--text);
+  box-shadow: 0 8px 20px rgba(15,23,42,.06);
+}
+.btn:hover{
+  border-color: rgba(37,99,235,.35);
+  transform: translateY(-1px);
+}
+.btn.primary{
+  background: linear-gradient(135deg, rgba(30,58,138,.95), rgba(37,99,235,.95));
+  color: #fff;
+  border-color: transparent;
+}
+
+/* slider / select 的文字顏色提升可讀性 */
+.select, .slider{
+  background: rgba(255,255,255,.72);
+  border:1px solid var(--line);
+  color: var(--muted);
+}
+
+/* ===== 卡片：改成白底＋陰影，文字清楚 ===== */
+.card{
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+h1{ color: var(--text); }
+.muted{ color: var(--muted); }
+
+/* ===== 字母按鈕：質感白卡 ===== */
+.letter{
+  background: rgba(255,255,255,.85);
+  border:1px solid rgba(15,23,42,.10);
+  box-shadow: 0 10px 26px rgba(15,23,42,.07);
+  transition: transform .08s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.letter:hover{
+  border-color: rgba(37,99,235,.30);
+  box-shadow: 0 14px 32px rgba(15,23,42,.10);
+}
+.letter:active{ transform: scale(.98); }
+
+.big{
+  color: var(--brand);
+  font-size:44px;
+  font-weight: 950;
+  letter-spacing:.5px;
+}
+.sub{
+  color: var(--muted);
+  font-size:14px;
+}
+
+/* ===== 選取狀態：對比要明顯但不刺眼 ===== */
+.letter.selected{
+  background: linear-gradient(180deg, rgba(37,99,235,.12), rgba(37,99,235,.05));
+  border-color: rgba(37,99,235,.45);
+  box-shadow: 0 16px 38px rgba(37,99,235,.12);
+}
+.letter.selected .big{ color: #0b2a6f; }
+.letter.selected .sub{ color: #1d4ed8; }
+
+/* ===== 播放中：再更明顯一階（老師教學好用） ===== */
+.letter.playing{
+  background: linear-gradient(180deg, rgba(30,58,138,.16), rgba(37,99,235,.08));
+  border-color: rgba(30,58,138,.60);
+  box-shadow: 0 18px 44px rgba(30,58,138,.18);
+}
+.letter.playing .big{ color: #0a1f55; }
+.letter.playing .sub{ color: #1e40af; }
+
+/* status 區塊更清爽 */
+.status{
+  background: rgba(255,255,255,.92);
 }
 
 
