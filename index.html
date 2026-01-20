@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Letter Pronunciation</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="wrap header">
+    <div class="brand">A–Z 自然發音</div>
+    <div class="controls">
+      <label class="select">
+        <span>Voice</span>
+        <select id="voiceSelect"></select>
+      </label>
+
+      <label class="slider">
+        <span>Speed</span>
+        <input id="rate" type="range" min="0.7" max="1.2" step="0.05" value="0.95">
+      </label>
+
+      <button id="stopBtn" class="btn">Stop</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <h1>點字母播放自然發音</h1>
+      <p class="muted">
+        這個版本使用瀏覽器內建語音（SpeechSynthesis），不需要額外音檔。
+        若你想改成 /ei/、/bi/ 這種「字母名稱」或改成「字母音」（phonics），我也能幫你切換。
+      </p>
+    </section>
+
+    <section id="grid" class="grid" aria-label="letters"></section>
+
+    <section class="card status">
+      <div>現在播放：<strong id="now">（尚未播放）</strong></div>
+      <div class="muted small">提示：手機上第一次可能需要先點一下按鈕才會允許播放。</div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
