@@ -21,6 +21,17 @@ const stopBtn = document.getElementById("stopBtn");
 // ===== Data =====
 const letters = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i)); // a-z
 let selected = new Set(loadSelected() ?? ["a","c","g","h","i","j","m","n","p","t"]); // 沒選過就給你一組預設
+// ===== 預先載入音檔（降低播放延遲）=====
+const audioPool = {};
+
+function preloadAudio(letters) {
+  letters.forEach(ch => {
+    const a = new Audio(`audio/${ch}.mp3`);
+    a.preload = "auto";
+    audioPool[ch] = a;
+  });
+}
+
 
 // ===== Init =====
 renderPick();
@@ -45,6 +56,10 @@ function show(which) {
   }
   pickView.classList.add("hidden");
   playView.classList.remove("hidden");
+  renderPlay();
+
+   preloadAudio([...selected]);
+
   renderPlay();
 }
 
@@ -114,8 +129,9 @@ function playLetter(letter, btn) {
   stopAll();
 
   const src = `audio/${letter}.mp3`;
-  const audio = new Audio(src);
-  currentAudio = audio;
+  const audio = audioPool[letter];
+currentAudio = audio;
+audio.currentTime = 0; // 每次從頭播
 
   now.textContent = `${letter.toUpperCase()}${letter}`;
 
@@ -169,3 +185,4 @@ function loadSelected() {
     return null;
   }
 }
+
