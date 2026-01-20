@@ -94,9 +94,7 @@ h1{margin:0 0 10px; font-size:26px}
   cursor:pointer;
   transition:transform .06s ease, border-color .15s ease;
 }
-.letter {
-  color: #ffffff;
-}
+
 
 .letter:hover{border-color:rgba(143,232,255,.55)}
 .letter:active{transform:scale(.98)}
@@ -139,3 +137,4 @@ h1{margin:0 0 10px; font-size:26px}
   border-color: rgba(143,232,255,.85);
   background: rgba(143,232,255,.14);
 }
+
