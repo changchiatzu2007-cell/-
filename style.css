@@ -115,3 +115,27 @@ h1{margin:0 0 10px; font-size:26px}
 
 
 .status{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap}
+
+/* 單頁兩畫面切換用 */
+.view.hidden{ display:none; }
+
+/* 選字母頁上方的小工具列 */
+.toolbar{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin: 10px 0 6px;
+}
+
+/* 選到的字母（選字母頁） */
+.letter.selected{
+  border-color: rgba(143,232,255,.75);
+  background: rgba(143,232,255,.10);
+}
+
+/* 正在播放（播放頁） */
+.letter.playing{
+  border-color: rgba(143,232,255,.85);
+  background: rgba(143,232,255,.14);
+}
