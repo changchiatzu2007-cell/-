@@ -212,4 +212,31 @@ drawBtn?.addEventListener("click", () => {
   drawResult.textContent = pick;
 });
 
+// ===== 上方導覽切換 =====
+const navButtons = document.querySelectorAll(".nav-btn");
+const lettersView = document.getElementById("lettersView");
+const drawView = document.getElementById("drawView");
+
+navButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    // 切 active 樣式
+    navButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const view = btn.dataset.view;
+
+    // 切畫面
+    if (view === "letters") {
+      lettersView.classList.remove("hidden");
+      drawView.classList.add("hidden");
+    } else if (view === "draw") {
+      lettersView.classList.add("hidden");
+      drawView.classList.remove("hidden");
+    }
+
+    // 停止所有聲音（避免切畫面還在播）
+    if (typeof stopAll === "function") stopAll();
+  });
+});
+
 
