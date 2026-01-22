@@ -249,4 +249,16 @@ h1{ color: var(--text); }
   background: rgba(255,255,255,.92);
 }
 
+.brand{
+  font-weight:900;
+  font-size:20px;
+  letter-spacing:.5px;
+}
+.brand-sub{
+  margin-left:8px;
+  font-weight:600;
+  font-size:13px;
+  color:var(--muted);
+}
+
 
