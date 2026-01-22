@@ -2,9 +2,6 @@
 const pickView = document.getElementById("pickView");
 const playView = document.getElementById("playView");
 
-const toPick = document.getElementById("toPick");
-const toPlay = document.getElementById("toPlay");
-
 const pickGrid = document.getElementById("pickGrid");
 const playGrid = document.getElementById("playGrid");
 
@@ -36,10 +33,6 @@ function preloadAudio(letters) {
 // ===== Init =====
 renderPick();
 updateCount();
-
-// ===== View Switch =====
-toPick.addEventListener("click", () => show("pick"));
-toPlay.addEventListener("click", () => show("play"));
 
 function show(which) {
   if (which === "pick") {
@@ -129,9 +122,17 @@ function playLetter(letter, btn) {
   stopAll();
 
   const src = `audio/${letter}.mp3`;
-  const audio = audioPool[letter];
+
+// ✅ 保底：如果 pool 沒有，就現建一個（避免 undefined）
+let audio = audioPool[letter];
+if (!audio) {
+  audio = new Audio(src);
+  audio.preload = "auto";
+  audioPool[letter] = audio;
+}
+
 currentAudio = audio;
-audio.currentTime = 0; // 每次從頭播
+audio.currentTime = 0;
 
   now.textContent = `${letter.toUpperCase()}${letter}`;
 
@@ -212,31 +213,38 @@ drawBtn?.addEventListener("click", () => {
   drawResult.textContent = pick;
 });
 
-// ===== 上方導覽切換 =====
+// ===== 上方導覽切換（字母發音 / 比手畫腳）=====
 const navButtons = document.querySelectorAll(".nav-btn");
 const lettersView = document.getElementById("lettersView");
 const drawView = document.getElementById("drawView");
+const speedWrap = document.getElementById("speedWrap");
+
+function setView(view) {
+  // active 樣式
+  navButtons.forEach(b => b.classList.toggle("active", b.dataset.view === view));
+
+  if (view === "letters") {
+    lettersView?.classList.remove("hidden");
+    drawView?.classList.add("hidden");
+    speedWrap?.classList.remove("hidden");
+
+    // ✅ 回到字母功能時，預設顯示「選字母」
+    show("pick");
+  } else if (view === "draw") {
+    lettersView?.classList.add("hidden");
+    drawView?.classList.remove("hidden");
+    speedWrap?.classList.add("hidden");
+
+    stopAll();
+  }
+}
 
 navButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    // 切 active 樣式
-    navButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    const view = btn.dataset.view;
-
-    // 切畫面
-    if (view === "letters") {
-      lettersView.classList.remove("hidden");
-      drawView.classList.add("hidden");
-    } else if (view === "draw") {
-      lettersView.classList.add("hidden");
-      drawView.classList.remove("hidden");
-    }
-
-    // 停止所有聲音（避免切畫面還在播）
-    if (typeof stopAll === "function") stopAll();
-  });
+  btn.addEventListener("click", () => setView(btn.dataset.view));
 });
+
+// 預設進站：字母發音
+setView("letters");
+
 
 
