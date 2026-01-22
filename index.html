@@ -60,10 +60,37 @@
         <div class="muted small" id="warn"></div>
       </section>
     </section>
+    <!-- ===== 比手畫腳抽選器 ===== -->
+<section id="drawView" class="view hidden">
+  <section class="card">
+    <h1>比手畫腳抽選器</h1>
+    <p class="muted">輸入多個詞（中英文皆可），每行一個或用逗號分隔。</p>
+  </section>
+
+  <section class="card">
+    <textarea id="wordInput" rows="5" placeholder="例如：
+蘋果
+飛機
+happiness
+run fast"></textarea>
+
+    <div class="toolbar">
+      <button id="loadWords" class="btn">加入清單</button>
+      <button id="drawBtn" class="btn primary">🎲 抽一個</button>
+    </div>
+  </section>
+
+  <section class="card result">
+    <div class="result-label">抽到的是：</div>
+    <div id="drawResult" class="result-word">—</div>
+  </section>
+</section>
+
   </main>
 
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
