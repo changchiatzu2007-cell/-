@@ -307,3 +307,38 @@ textarea{
   box-shadow:0 10px 28px rgba(37,99,235,.25);
 }
 
+/* ===== 品牌 Logo 區 ===== */
+.brand-wrap{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+}
+
+.brand-logo{
+  height:42px;          /* Logo 高度，可微調 */
+  width:auto;
+  border-radius:10px;   /* 如果你的 Logo 是方的會更柔 */
+}
+
+.brand-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+
+.brand-title{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:.4px;
+  color:var(--text);
+}
+
+.brand-sub{
+  font-size:12px;
+  font-weight:600;
+  color:var(--muted);
+}
+
+
+
