@@ -1,106 +1,97 @@
 <!doctype html>
-<html lang="zh-Hant"> 
-<title>YL Learning</title>
+<html lang="zh-Hant">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>字母發音教學</title>
-  <link rel="stylesheet" href="style.css?v=2">
-
+  <title>YL Learning</title>
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
+
 <body>
   <header class="wrap header">
-   <div class="brand-wrap" id="brandHome">
- <img src="images/logo.svg" alt="YL studio logo" class="brand-logo">
-  <div class="brand-text">
-    <div class="brand-title">YL Learning</div>
-    <div class="brand-sub">by YL studio</div>
-  </div>
-</div>
+    <div class="brand-wrap" id="brandHome">
+      <img src="images/logo.svg" alt="YL studio logo" class="brand-logo">
+      <div class="brand-text">
+        <div class="brand-title">YL Learning</div>
+        <div class="brand-sub">by YL studio</div>
+      </div>
+    </div>
 
+    <div class="controls nav">
+      <button class="nav-btn active" data-view="letters">字母發音</button>
+      <button class="nav-btn" data-view="draw">比手畫腳</button>
 
+      <label class="slider" id="speedWrap">
+        <span>Speed</span>
+        <input id="rate" type="range" min="0.7" max="1.2" step="0.05" value="1.0">
+      </label>
 
-   <div class="controls nav">
-  <button class="nav-btn active" data-view="letters">字母發音</button>
-  <button class="nav-btn" data-view="draw">比手畫腳</button>
-
-  <label class="slider" id="speedWrap">
-    <span>Speed</span>
-    <input id="rate" type="range" min="0.7" max="1.2" step="0.05" value="1.0">
-  </label>
-
-  <button id="stopBtn" class="btn">Stop</button>
-</div>
-
+      <button id="stopBtn" class="btn">Stop</button>
+    </div>
   </header>
 
   <main class="wrap">
-    <!-- ====== 畫面 1：選字母 ====== -->
-    <section id="pickView" class="view">
-      <section class="card">
-        <h1>選擇要練的字母</h1>
-        <p class="muted">點選字母（顯示大寫+小寫），完成後按上方「播放」。</p>
+    <!-- ✅ 字母模組（必須有 lettersView，導覽才會動） -->
+    <section id="lettersView" class="view">
+      <!-- ====== 畫面 1：選字母 ====== -->
+      <section id="pickView" class="view">
+        <section class="card">
+          <h1>選擇要練的字母</h1>
+          <p class="muted">點選字母（顯示大寫+小寫），完成後按上方「播放」。</p>
+        </section>
+
+        <div class="toolbar">
+          <button id="allBtn" class="btn">全選</button>
+          <button id="noneBtn" class="btn">全不選</button>
+          <div class="muted small">已選：<strong id="count">0</strong> / 26</div>
+        </div>
+
+        <section id="pickGrid" class="grid" aria-label="letter picker"></section>
       </section>
 
-      <div class="toolbar">
-        <button id="allBtn" class="btn">全選</button>
-        <button id="noneBtn" class="btn">全不選</button>
-        <div class="muted small">已選：<strong id="count">0</strong> / 26</div>
-      </div>
+      <!-- ====== 畫面 2：播放 ====== -->
+      <section id="playView" class="view hidden">
+        <section class="card">
+          <h1>點字母播放發音</h1>
+          <p class="muted">此頁會依你在「選字母」畫面選的內容生成按鈕。音檔來源：audio/a.mp3 ~ audio/z.mp3。</p>
+        </section>
 
-      <section id="pickGrid" class="grid" aria-label="letter picker"></section>
+        <section id="playGrid" class="grid" aria-label="letters"></section>
+
+        <section class="card status">
+          <div>正在播放：<strong id="now">（尚未播放）</strong></div>
+          <div class="muted small" id="warn"></div>
+        </section>
+      </section>
     </section>
 
-    <!-- ====== 畫面 2：播放 ====== -->
-    <section id="playView" class="view hidden">
+    <!-- ✅ 比手畫腳抽選器 -->
+    <section id="drawView" class="view hidden">
       <section class="card">
-        <h1>點字母播放發音</h1>
-        <p class="muted">此頁會依你在「選字母」畫面選的內容生成按鈕。音檔來源：audio/a.mp3 ~ audio/z.mp3。</p>
+        <h1>比手畫腳抽選器</h1>
+        <p class="muted">輸入多個詞（中英文皆可），每行一個或用逗號分隔。</p>
       </section>
 
-      <section id="playGrid" class="grid" aria-label="letters"></section>
-
-      <section class="card status">
-        <div>正在播放：<strong id="now">（尚未播放）</strong></div>
-        <div class="muted small" id="warn"></div>
-      </section>
-    </section>
-    <!-- ===== 比手畫腳抽選器 ===== -->
-<section id="drawView" class="view hidden">
-  <section class="card">
-    <h1>比手畫腳抽選器</h1>
-    <p class="muted">輸入多個詞（中英文皆可），每行一個或用逗號分隔。</p>
-  </section>
-
-  <section class="card">
-    <textarea id="wordInput" rows="5" placeholder="例如：
+      <section class="card">
+        <textarea id="wordInput" rows="5" placeholder="例如：
 蘋果
 飛機
 happiness
 run fast"></textarea>
 
-    <div class="toolbar">
-      <button id="loadWords" class="btn">加入清單</button>
-      <button id="drawBtn" class="btn primary">🎲 抽一個</button>
-    </div>
-  </section>
+        <div class="toolbar">
+          <button id="loadWords" class="btn">加入清單</button>
+          <button id="drawBtn" class="btn primary">🎲 抽一個</button>
+        </div>
+      </section>
 
-  <section class="card result">
-    <div class="result-label">抽到的是：</div>
-    <div id="drawResult" class="result-word">—</div>
-  </section>
-</section>
-
+      <section class="card result">
+        <div class="result-label">抽到的是：</div>
+        <div id="drawResult" class="result-word">—</div>
+      </section>
+    </section>
   </main>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
