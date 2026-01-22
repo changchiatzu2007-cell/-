@@ -185,4 +185,31 @@ function loadSelected() {
     return null;
   }
 }
+// ===== 比手畫腳抽選系統 =====
+const wordInput = document.getElementById("wordInput");
+const loadWordsBtn = document.getElementById("loadWords");
+const drawBtn = document.getElementById("drawBtn");
+const drawResult = document.getElementById("drawResult");
+
+let words = [];
+
+loadWordsBtn?.addEventListener("click", () => {
+  const raw = wordInput.value;
+  words = raw
+    .split(/[\n,]/)
+    .map(w => w.trim())
+    .filter(w => w.length > 0);
+
+  alert(`已加入 ${words.length} 個詞`);
+});
+
+drawBtn?.addEventListener("click", () => {
+  if (words.length === 0) {
+    alert("請先加入詞彙！");
+    return;
+  }
+  const pick = words[Math.floor(Math.random() * words.length)];
+  drawResult.textContent = pick;
+});
+
 
