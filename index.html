@@ -16,17 +16,18 @@
 </div>
 
 
-    <div class="controls">
-      <button id="toPick" class="btn">選字母</button>
-      <button id="toPlay" class="btn primary">播放</button>
+   <div class="controls nav">
+  <button class="nav-btn active" data-view="letters">字母發音</button>
+  <button class="nav-btn" data-view="draw">比手畫腳</button>
 
-      <label class="slider">
-        <span>Speed</span>
-        <input id="rate" type="range" min="0.7" max="1.2" step="0.05" value="1.0">
-      </label>
+  <label class="slider">
+    <span>Speed</span>
+    <input id="rate" type="range" min="0.7" max="1.2" step="0.05" value="1.0">
+  </label>
 
-      <button id="stopBtn" class="btn">Stop</button>
-    </div>
+  <button id="stopBtn" class="btn">Stop</button>
+</div>
+
   </header>
 
   <main class="wrap">
@@ -91,6 +92,7 @@ run fast"></textarea>
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
