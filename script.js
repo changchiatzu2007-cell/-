@@ -240,8 +240,14 @@
   const clearWordsBtn = $("clearWords");
   const drawResult = $("drawResult");
   const wordCount = $("wordCount");
+  const removePickedBtn = $("removePicked");
+let lastPickedIndex = -1;
+
 
   let words = [];
+  const removePickedBtn = $("removePicked");
+let lastPickedIndex = -1;
+
 
   function updateWordCount() {
     if (wordCount) wordCount.textContent = String(words.length);
@@ -258,21 +264,47 @@
     alert(`已加入 ${words.length} 個詞`);
   });
 
-  drawBtn?.addEventListener("click", () => {
-    if (words.length === 0) {
-      alert("請先加入詞彙！");
-      return;
-    }
-    const pick = words[Math.floor(Math.random() * words.length)];
-    if (drawResult) drawResult.textContent = pick;
-  });
+ drawBtn?.addEventListener("click", () => {
+  if (words.length === 0) {
+    alert("所有詞都抽完了！");
+    return;
+  }
 
-  clearWordsBtn?.addEventListener("click", () => {
-    words = [];
-    if (wordInput) wordInput.value = "";
-    if (drawResult) drawResult.textContent = "—";
-    updateWordCount();
-  });
+  lastPickedIndex = Math.floor(Math.random() * words.length);
+  const pick = words[lastPickedIndex];
+
+  if (drawResult) drawResult.textContent = pick;
+  removePickedBtn?.classList.remove("hidden");
+});
+
+
+ clearWordsBtn?.addEventListener("click", () => {
+  words = [];
+  lastPickedIndex = -1;
+
+  if (wordInput) wordInput.value = "";
+  if (drawResult) drawResult.textContent = "—";
+  removePickedBtn?.classList.add("hidden");
+
+  updateWordCount();
+});
+
+  removePickedBtn?.addEventListener("click", () => {
+  if (lastPickedIndex < 0) return;
+
+  words.splice(lastPickedIndex, 1); // ❌ 移除已抽到
+  lastPickedIndex = -1;
+
+  if (drawResult) drawResult.textContent = "—";
+  removePickedBtn.classList.add("hidden");
+
+  updateWordCount();
+
+  if (words.length === 0) {
+    alert("已全部抽完！");
+  }
+});
+
 
   // ===== Nav events =====
   navHome?.addEventListener("click", () => showView("home"));
@@ -315,3 +347,4 @@
   updateWordCount();
   showView("home"); // ✅ 你要的：進站先顯示主畫面
 })();
+
