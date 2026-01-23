@@ -111,13 +111,20 @@ run fast"></textarea>
         </div>
       </section>
 
-      <section class="card result">
-        <div class="result-label muted">抽到的是：</div>
-        <div id="drawResult" class="result-word">—</div>
-      </section>
-    </section>
+     <section class="card result">
+  <div class="result-label muted">抽到的是：</div>
+  <div id="drawResult" class="result-word">—</div>
+
+  <div class="toolbar" style="justify-content:center; margin-top:12px;">
+    <button id="removePicked" class="btn hidden" type="button">
+      ❌ 移除已抽到
+    </button>
+  </div>
+</section>
+
   </main>
 
   <script src="script.js?v=1"></script>
 </body>
 </html>
+
