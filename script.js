@@ -1,41 +1,42 @@
 document.addEventListener("DOMContentLoaded", () => {
   const $ = (id) => document.getElementById(id);
 
-  // ===== Views =====
+  // =========================
+  // ===== Views / Nav =====
+  // =========================
   const homeView = $("homeView");
   const lettersView = $("lettersView");
   const drawView = $("drawView");
+  const memoryView = $("memoryView");
 
   const navHome = $("navHome");
   const navLetters = $("navLetters");
   const navDraw = $("navDraw");
-  const goHome = $("goHome");
+  const navMemory = $("navMemory");
+
   const enterLetters = $("enterLetters");
   const enterDraw = $("enterDraw");
+  const enterMemory = $("enterMemory");
 
+  const goHome = $("goHome");
   const speedWrap = $("speedWrap");
   const rateInput = $("rate");
   const stopBtn = $("stopBtn");
 
-  // 防呆：如果 JS 沒有抓到關鍵元素，就在 console 顯示（不讓整支崩）
-  const must = ["homeView","lettersView","drawView","navHome","navLetters","navDraw"];
-  const missing = must.filter(id => !$(id));
-  if (missing.length) {
-    console.warn("[YL Learning] Missing elements:", missing);
+  function hideAllViews() {
+    [homeView, lettersView, drawView, memoryView].forEach(v => v?.classList.add("hidden"));
   }
 
   function setNavActive(which) {
-    [navHome, navLetters, navDraw].forEach(b => b?.classList.remove("active"));
+    [navHome, navLetters, navDraw, navMemory].forEach(b => b?.classList.remove("active"));
     if (which === "home") navHome?.classList.add("active");
     if (which === "letters") navLetters?.classList.add("active");
     if (which === "draw") navDraw?.classList.add("active");
+    if (which === "memory") navMemory?.classList.add("active");
   }
 
   function showView(which) {
-    homeView?.classList.add("hidden");
-    lettersView?.classList.add("hidden");
-    drawView?.classList.add("hidden");
-
+    hideAllViews();
     stopAllAudio();
 
     if (which === "home") {
@@ -50,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
       speedWrap?.classList.remove("hidden");
       stopBtn?.classList.remove("hidden");
       setNavActive("letters");
-      showLettersPanel("pick");
+      renderPick();
     }
 
     if (which === "draw") {
@@ -59,145 +60,78 @@ document.addEventListener("DOMContentLoaded", () => {
       stopBtn?.classList.add("hidden");
       setNavActive("draw");
     }
+
+    if (which === "memory") {
+      memoryView?.classList.remove("hidden");
+      speedWrap?.classList.remove("hidden");
+      stopBtn?.classList.add("hidden");
+      setNavActive("memory");
+      renderMemoryPick();
+    }
   }
 
-  // ===== Letters module =====
-  const pickTab = $("pickTab");
-  const playTab = $("playTab");
-  const pickPanel = $("pickPanel");
-  const playPanel = $("playPanel");
+  // =========================
+  // ===== Letters (MP3) =====
+  // =========================
   const pickGrid = $("pickGrid");
   const playGrid = $("playGrid");
-
-  const countEl = $("count");
-  const warnEl = $("warn");
   const nowEl = $("now");
 
-  const allBtn = $("allBtn");
-  const noneBtn = $("noneBtn");
-  const only10Btn = $("only10Btn");
-
-  const letters = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i));
-  const default10 = ["a","c","g","h","i","j","m","n","p","t"];
-
-  let selected = new Set(loadSelected() ?? default10);
-
-  // audio
+  const letters = "abcdefghijklmnopqrstuvwxyz".split("");
+  let selectedLetters = new Set(letters.slice(0, 10));
   const audioPool = {};
   let currentAudio = null;
-
-  function preloadAudio(list) {
-    list.forEach(ch => {
-      if (!audioPool[ch]) {
-        const a = new Audio(`audio/${ch}.mp3`);
-        a.preload = "auto";
-        audioPool[ch] = a;
-      }
-    });
-  }
-
-  function updateCount() {
-    if (countEl) countEl.textContent = String(selected.size);
-  }
-
-  function showLettersPanel(which) {
-    if (which === "pick") {
-      pickTab?.classList.add("active");
-      playTab?.classList.remove("active");
-      pickPanel?.classList.remove("hidden");
-      playPanel?.classList.add("hidden");
-      stopAllAudio();
-      return;
-    }
-
-    if (selected.size === 0) {
-      alert("至少選一個字母！");
-      return;
-    }
-
-    pickTab?.classList.remove("active");
-    playTab?.classList.add("active");
-    pickPanel?.classList.add("hidden");
-    playPanel?.classList.remove("hidden");
-
-    const arr = [...selected].sort();
-    preloadAudio(arr);
-    renderPlay();
-  }
 
   function renderPick() {
     if (!pickGrid) return;
     pickGrid.innerHTML = "";
+
     letters.forEach(ch => {
       const btn = document.createElement("button");
-      btn.type = "button";
       btn.className = "letter";
-      btn.innerHTML = `<div class="big">${ch.toUpperCase()}${ch}</div><div class="sub">選擇</div>`;
-      btn.classList.toggle("selected", selected.has(ch));
+      btn.textContent = ch.toUpperCase();
+      btn.classList.toggle("selected", selectedLetters.has(ch));
 
-      btn.addEventListener("click", () => {
-        if (selected.has(ch)) selected.delete(ch);
-        else selected.add(ch);
-        btn.classList.toggle("selected", selected.has(ch));
-        saveSelected([...selected].sort());
-        updateCount();
-      });
+      btn.onclick = () => {
+        if (selectedLetters.has(ch)) selectedLetters.delete(ch);
+        else selectedLetters.add(ch);
+        btn.classList.toggle("selected");
+      };
 
       pickGrid.appendChild(btn);
     });
-    updateCount();
   }
 
   function renderPlay() {
     if (!playGrid) return;
     playGrid.innerHTML = "";
 
-    const arr = [...selected].sort();
-    if (warnEl) warnEl.textContent = `已載入 ${arr.length} 個字母：${arr.join(", ")}`;
-
-    arr.forEach(ch => {
+    [...selectedLetters].forEach(ch => {
       const btn = document.createElement("button");
-      btn.type = "button";
       btn.className = "letter";
-      btn.innerHTML = `<div class="big">${ch.toUpperCase()}${ch}</div><div class="sub">播放</div>`;
-      btn.addEventListener("click", () => playLetter(ch, btn));
+      btn.textContent = ch.toUpperCase();
+      btn.onclick = () => playLetterMP3(ch, btn);
       playGrid.appendChild(btn);
     });
   }
 
-  function playLetter(letter, btn) {
+  function playLetterMP3(letter, btn) {
     stopAllAudio();
 
     let audio = audioPool[letter];
     if (!audio) {
       audio = new Audio(`audio/${letter}.mp3`);
-      audio.preload = "auto";
       audioPool[letter] = audio;
     }
 
     currentAudio = audio;
     audio.currentTime = 0;
-    audio.playbackRate = Number(rateInput?.value ?? 1);
+    audio.play();
 
-    if (nowEl) nowEl.textContent = `${letter.toUpperCase()}${letter}`;
-    playGrid?.querySelectorAll(".letter").forEach(b => b.classList.remove("playing"));
+    nowEl.textContent = letter.toUpperCase();
     btn.classList.add("playing");
 
-    audio.onerror = () => {
-      alert(`找不到或無法播放：audio/${letter}.mp3\n請確認 audio 資料夾與檔名（小寫 a.mp3 ~ z.mp3）`);
-      btn.classList.remove("playing");
-      if (nowEl) nowEl.textContent = "（播放失敗）";
-    };
-
-    audio.onended = () => {
-      btn.classList.remove("playing");
-      if (nowEl) nowEl.textContent = `${letter.toUpperCase()}${letter}（播放完成）`;
-    };
-
-    audio.play().catch(() => {
-      alert("手機/iPad 可能需要再點一次才允許播放聲音（系統限制）。");
-      btn.classList.remove("playing");
-    });
+    audio.onended = () => btn.classList.remove("playing");
   }
 
   function stopAllAudio() {
@@ -206,119 +140,132 @@ document.addEventListener("DOMContentLoaded", () => {
       currentAudio.currentTime = 0;
       currentAudio = null;
     }
-    playGrid?.querySelectorAll(".letter").forEach(b => b.classList.remove("playing"));
-    if (nowEl) nowEl.textContent = "（已停止）";
   }
 
-  function saveSelected(arr) {
-    localStorage.setItem("selectedLetters", JSON.stringify(arr));
+  // =========================
+  // ===== Browser TTS =====
+  // =========================
+  let ttsVoice = null;
+
+  function initTTS() {
+    const voices = speechSynthesis.getVoices();
+    ttsVoice = voices.find(v => v.lang.startsWith("en")) || voices[0];
   }
 
-  function loadSelected() {
-    try {
-      const arr = JSON.parse(localStorage.getItem("selectedLetters"));
-      return (Array.isArray(arr) ? arr : [])
-        .map(x => String(x).toLowerCase())
-        .filter(ch => /^[a-z]$/.test(ch));
-    } catch {
-      return null;
-    }
+  speechSynthesis.onvoiceschanged = initTTS;
+  initTTS();
+
+  function speak(text, rate = 1) {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    if (ttsVoice) u.voice = ttsVoice;
+    u.rate = rate;
+    speechSynthesis.speak(u);
   }
 
-  // events: letters
-  pickTab?.addEventListener("click", () => showLettersPanel("pick"));
-  playTab?.addEventListener("click", () => showLettersPanel("play"));
-  allBtn?.addEventListener("click", () => {
-    selected = new Set(letters);
-    saveSelected([...selected].sort());
-    renderPick();
-  });
-  noneBtn?.addEventListener("click", () => {
-    selected = new Set();
-    saveSelected([]);
-    renderPick();
-  });
-  only10Btn?.addEventListener("click", () => {
-    selected = new Set(default10);
-    saveSelected([...selected].sort());
-    renderPick();
-  });
-  stopBtn?.addEventListener("click", stopAllAudio);
-
-  // ===== Draw module =====
+  // =========================
+  // ===== Draw (TTS) =====
+  // =========================
   const wordInput = $("wordInput");
-  const loadWordsBtn = $("loadWords");
   const drawBtn = $("drawBtn");
   const removePickedBtn = $("removePicked");
-  const clearWordsBtn = $("clearWords");
   const drawResult = $("drawResult");
-  const wordCount = $("wordCount");
 
   let words = [];
-  let lastPickedIndex = -1;
+  let lastPick = -1;
 
-  function updateWordCount() {
-    if (wordCount) wordCount.textContent = String(words.length);
-  }
-
-  loadWordsBtn?.addEventListener("click", () => {
-    const raw = wordInput?.value ?? "";
-    words = raw
-      .split(/[\n,]/)
-      .map(w => w.trim())
-      .filter(w => w.length > 0);
-    lastPickedIndex = -1;
-    removePickedBtn?.classList.add("hidden");
-    if (drawResult) drawResult.textContent = "—";
-    updateWordCount();
-    alert(`已加入 ${words.length} 個詞`);
+  $("loadWords")?.addEventListener("click", () => {
+    words = (wordInput.value || "").split(/[\n,]/).map(w => w.trim()).filter(Boolean);
+    alert(`已載入 ${words.length} 個詞`);
   });
 
   drawBtn?.addEventListener("click", () => {
-    if (words.length === 0) {
-      alert("所有詞都抽完了！");
-      return;
-    }
-    lastPickedIndex = Math.floor(Math.random() * words.length);
-    const pick = words[lastPickedIndex];
-    if (drawResult) drawResult.textContent = pick;
-    removePickedBtn?.classList.remove("hidden");
+    if (!words.length) return alert("沒有詞了！");
+    lastPick = Math.floor(Math.random() * words.length);
+    const pick = words[lastPick];
+    drawResult.textContent = pick;
+    speak(pick, 1);
+    removePickedBtn.classList.remove("hidden");
   });
 
   removePickedBtn?.addEventListener("click", () => {
-    if (lastPickedIndex < 0) return;
-    words.splice(lastPickedIndex, 1); // 移除避免重複
-    lastPickedIndex = -1;
-    if (drawResult) drawResult.textContent = "—";
+    if (lastPick < 0) return;
+    words.splice(lastPick, 1);
+    lastPick = -1;
+    drawResult.textContent = "—";
     removePickedBtn.classList.add("hidden");
-    updateWordCount();
-    if (words.length === 0) alert("已全部抽完！");
   });
 
-  clearWordsBtn?.addEventListener("click", () => {
-    words = [];
-    lastPickedIndex = -1;
-    if (wordInput) wordInput.value = "";
-    if (drawResult) drawResult.textContent = "—";
-    removePickedBtn?.classList.add("hidden");
-    updateWordCount();
-  });
+  // =========================
+  // ===== Memory Game (TTS) =====
+  // =========================
+  const memoryPickGrid = $("memoryPickGrid");
+  const memoryGameGrid = $("memoryGameGrid");
 
-  // ===== Nav events =====
-  navHome?.addEventListener("click", () => showView("home"));
-  navLetters?.addEventListener("click", () => showView("letters"));
-  navDraw?.addEventListener("click", () => showView("draw"));
+  const memoryWords = [
+    { word: "ham", img: "images/memory/ham.jpg" },
+    { word: "jam", img: "images/memory/jam.jpg" },
+    { word: "ant", img: "images/memory/ant.jpg" },
+    { word: "fan", img: "images/memory/fan.jpg" },
+    { word: "pan", img: "images/memory/pan.jpg" }, 
+    { word: "van", img: "images/memory/van.jpg" }, 
+    { word: "angry", img: "images/memory/angry.jpg" }, 
+    { word: "key", img: "images/memory/key.jpg" }, 
+    { word: "monkey", img: "images/memory/monkey.jpg" }, 
+    { word: "green", img: "images/memory/green.jpg" }, 
+    { word: "queen", img: "images/memory/queen.jpg" }, 
+    { word: "three", img: "images/memory/three.jpg" }, 
+    { word: "igloo", img: "images/memory/igloo.jpg" }, 
+    { word: "zoo", img: "images/memory/zoo.jpg" }, 
+    { word: "hungry", img: "images/memory/hungry.jpg" }, 
+    { word: "this", img: "images/memory/this.jpg" }, 
+    { word: "that", img: "images/memory/that.jpg" }, 
+    { word: "thirsty", img: "images/memory/thirsty.jpg" }, 
+    { word: "pig", img: "images/memory/pig.jpg" }, 
+    { word: "wig", img: "images/memory/wig.jpg" }, 
+    { word: "ox", img: "images/memory/ox.jpg" }, 
+    { word: "fox", img: "images/memory/fox.jpg" },
+  ];
 
-  enterLetters?.addEventListener("click", () => showView("letters"));
-  enterDraw?.addEventListener("click", () => showView("draw"));
+  let memorySelected = [];
 
-  goHome?.addEventListener("click", () => showView("home"));
-  goHome?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") showView("home");
-  });
+  function renderMemoryPick() {
+    if (!memoryPickGrid) return;
+    memoryPickGrid.innerHTML = "";
 
+    memoryWords.forEach(item => {
+      const btn = document.createElement("button");
+      btn.className = "memory-pick";
+      btn.textContent = item.word;
+      btn.onclick = () => {
+        btn.classList.toggle("selected");
+        if (memorySelected.includes(item)) {
+          memorySelected = memorySelected.filter(x => x !== item);
+        } else {
+          memorySelected.push(item);
+        }
+      };
+      memoryPickGrid.appendChild(btn);
+    });
+  }
+
+  // =========================
+  // ===== Nav Events =====
+  // =========================
+  navHome?.onclick = () => showView("home");
+  navLetters?.onclick = () => { showView("letters"); renderPlay(); };
+  navDraw?.onclick = () => showView("draw");
+  navMemory?.onclick = () => showView("memory");
+
+  enterLetters?.onclick = () => { showView("letters"); renderPlay(); };
+  enterDraw?.onclick = () => showView("draw");
+  enterMemory?.onclick = () => showView("memory");
+
+  goHome?.onclick = () => showView("home");
+
+  // =========================
   // ===== Init =====
-  renderPick();
-  updateWordCount();
+  // =========================
   showView("home");
 });
