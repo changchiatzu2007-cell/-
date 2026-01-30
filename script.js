@@ -1,26 +1,25 @@
 document.addEventListener("DOMContentLoaded", () => {
   const $ = (id) => document.getElementById(id);
 
-  // =========================
-  // ===== Views / Nav =====
-  // =========================
+  // Views
   const homeView = $("homeView");
   const lettersView = $("lettersView");
   const drawView = $("drawView");
   const memoryView = $("memoryView");
 
+  // Nav
   const navHome = $("navHome");
   const navLetters = $("navLetters");
   const navDraw = $("navDraw");
   const navMemory = $("navMemory");
 
+  // Enter buttons
   const enterLetters = $("enterLetters");
   const enterDraw = $("enterDraw");
   const enterMemory = $("enterMemory");
 
   const goHome = $("goHome");
   const speedWrap = $("speedWrap");
-  const rateInput = $("rate");
   const stopBtn = $("stopBtn");
 
   function hideAllViews() {
@@ -29,10 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setNavActive(which) {
     [navHome, navLetters, navDraw, navMemory].forEach(b => b?.classList.remove("active"));
-    if (which === "home") navHome?.classList.add("active");
-    if (which === "letters") navLetters?.classList.add("active");
-    if (which === "draw") navDraw?.classList.add("active");
-    if (which === "memory") navMemory?.classList.add("active");
+    if (which) {
+      const btn = { home: navHome, letters: navLetters, draw: navDraw, memory: navMemory }[which];
+      btn?.classList.add("active");
+    }
   }
 
   function showView(which) {
@@ -43,35 +42,34 @@ document.addEventListener("DOMContentLoaded", () => {
       homeView?.classList.remove("hidden");
       speedWrap?.classList.add("hidden");
       stopBtn?.classList.add("hidden");
-      setNavActive("home");
     }
 
     if (which === "letters") {
       lettersView?.classList.remove("hidden");
       speedWrap?.classList.remove("hidden");
       stopBtn?.classList.remove("hidden");
-      setNavActive("letters");
       renderPick();
+      renderPlay();
     }
 
     if (which === "draw") {
       drawView?.classList.remove("hidden");
       speedWrap?.classList.add("hidden");
       stopBtn?.classList.add("hidden");
-      setNavActive("draw");
     }
 
     if (which === "memory") {
       memoryView?.classList.remove("hidden");
       speedWrap?.classList.remove("hidden");
       stopBtn?.classList.add("hidden");
-      setNavActive("memory");
       renderMemoryPick();
     }
+
+    setNavActive(which);
   }
 
   // =========================
-  // ===== Letters (MP3) =====
+  // Letters (MP3)
   // =========================
   const pickGrid = $("pickGrid");
   const playGrid = $("playGrid");
@@ -143,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================
-  // ===== Browser TTS =====
+  // Browser TTS
   // =========================
   let ttsVoice = null;
 
@@ -165,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================
-  // ===== Draw (TTS) =====
+  // Draw (抽籤)
   // =========================
   const wordInput = $("wordInput");
   const drawBtn = $("drawBtn");
@@ -198,10 +196,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =========================
-  // ===== Memory Game (TTS) =====
+  // Memory Game
   // =========================
   const memoryPickGrid = $("memoryPickGrid");
-  const memoryGameGrid = $("memoryGameGrid");
 
   const memoryWords = [
     { word: "ham", img: "images/memory/ham.jpg" },
@@ -251,21 +248,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================
-  // ===== Nav Events =====
+  // Nav Events
   // =========================
   navHome?.onclick = () => showView("home");
-  navLetters?.onclick = () => { showView("letters"); renderPlay(); };
+  navLetters?.onclick = () => showView("letters");
   navDraw?.onclick = () => showView("draw");
   navMemory?.onclick = () => showView("memory");
 
-  enterLetters?.onclick = () => { showView("letters"); renderPlay(); };
+  enterLetters?.onclick = () => showView("letters");
   enterDraw?.onclick = () => showView("draw");
   enterMemory?.onclick = () => showView("memory");
 
   goHome?.onclick = () => showView("home");
 
   // =========================
-  // ===== Init =====
+  // Init
   // =========================
   showView("home");
 });
