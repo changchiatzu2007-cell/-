@@ -49,6 +49,11 @@
           <div class="feature-title">比手畫腳抽籤系統</div>
           <div class="feature-desc muted">輸入詞彙 → 抽籤 → 可移除避免重複</div>
         </button>
+        <button class="feature-card" id="enterMemory" type="button">
+  <div class="feature-title">記憶翻牌遊戲</div>
+  <div class="feature-desc muted">翻牌配對＋發音＋圖片</div>
+</button>
+
       </section>
     </section>
 
@@ -89,6 +94,38 @@
         <h2>比手畫腳抽籤系統</h2>
         <p class="muted">每行一個或用逗號分隔。抽到後可「移除」避免重複抽到。</p>
       </section>
+      <!-- Memory -->
+<section id="memoryView" class="view hidden">
+  <section class="card">
+    <h2>記憶翻牌遊戲</h2>
+    <p class="muted">先選單字，再開始遊戲。</p>
+  </section>
+
+  <!-- 選單字 -->
+  <section id="memoryPickView" class="card">
+    <h3>選擇要玩的單字</h3>
+    <div id="memoryPickGrid" class="grid"></div>
+    <div class="toolbar">
+      <button id="memoryStartBtn" class="btn primary" type="button">開始遊戲</button>
+    </div>
+  </section>
+
+  <!-- 遊戲畫面 -->
+  <section id="memoryGameView" class="hidden">
+    <section class="card">
+      <h3>翻牌配對</h3>
+      <div class="muted small">點兩張牌配對</div>
+    </section>
+
+    <section id="memoryGameGrid" class="grid"></section>
+
+    <section class="card">
+      <h4>已配對</h4>
+      <div id="memoryMatched" class="grid"></div>
+    </section>
+  </section>
+</section>
+
 
       <section class="card">
         <textarea id="wordInput" rows="6" placeholder="例如：
@@ -116,3 +153,4 @@ run fast"></textarea>
   <script src="script.js?v=99"></script>
 </body>
 </html>
+
