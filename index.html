@@ -1,156 +1,23 @@
-<!doctype html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>YL Learning</title>
-  <link rel="stylesheet" href="style.css?v=99">
-</head>
-
-<body>
-  <header class="wrap header">
-    <div class="brand-wrap" id="goHome" role="button" tabindex="0" aria-label="Go Home">
-      <img src="images/logo.svg" alt="YL studio logo" class="brand-logo">
-      <div class="brand-text">
-        <div class="brand-title">YL Learning</div>
-        <div class="brand-sub">by YL studio</div>
-      </div>
+<header class="wrap header">
+  <div class="brand-wrap" id="goHome" role="button" tabindex="0" aria-label="Go Home">
+    <img src="images/logo.svg" alt="YL studio logo" class="brand-logo">
+    <div class="brand-text">
+      <div class="brand-title">YL Learning</div>
+      <div class="brand-sub">by YL studio</div>
     </div>
+  </div>
 
-    <div class="controls nav">
-      <button class="nav-btn" id="navHome" type="button">主畫面</button>
-      <button class="nav-btn" id="navLetters" type="button">字母發音</button>
-      <button class="nav-btn" id="navDraw" type="button">比手畫腳</button>
+  <div class="controls nav">
+    <button class="nav-btn" id="navHome" type="button">主畫面</button>
+    <button class="nav-btn" id="navLetters" type="button">字母發音</button>
+    <button class="nav-btn" id="navDraw" type="button">比手畫腳</button>
+    <button class="nav-btn" id="navMemory" type="button">記憶翻牌</button>
 
-      <label class="slider hidden" id="speedWrap">
-        <span>Speed</span>
-        <input id="rate" type="range" min="0.7" max="1.2" step="0.05" value="1.0">
-      </label>
+    <label class="slider hidden" id="speedWrap">
+      <span>Speed</span>
+      <input id="rate" type="range" min="0.7" max="1.2" step="0.05" value="1.0">
+    </label>
 
-      <button id="stopBtn" class="btn hidden" type="button">Stop</button>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <!-- Home -->
-    <section id="homeView" class="view">
-      <section class="card">
-        <h1>YL Learning</h1>
-        <p class="muted">請選擇你要使用的系統。</p>
-      </section>
-
-      <section class="grid2">
-        <button class="feature-card" id="enterLetters" type="button">
-          <div class="feature-title">字母發音系統</div>
-          <div class="feature-desc muted">選字母 → 播放（顯示 Aa）</div>
-        </button>
-
-        <button class="feature-card" id="enterDraw" type="button">
-          <div class="feature-title">比手畫腳抽籤系統</div>
-          <div class="feature-desc muted">輸入詞彙 → 抽籤 → 可移除避免重複</div>
-        </button>
-        <button class="feature-card" id="enterMemory" type="button">
-  <div class="feature-title">記憶翻牌遊戲</div>
-  <div class="feature-desc muted">翻牌配對＋發音＋圖片</div>
-</button>
-
-      </section>
-    </section>
-
-    <!-- Letters -->
-    <section id="lettersView" class="view hidden">
-      <section class="card">
-        <h2>字母發音練習</h2>
-        <p class="muted">先選字母，再切到播放。</p>
-
-        <div class="toolbar">
-          <button id="pickTab" class="seg active" type="button">選字母</button>
-          <button id="playTab" class="seg" type="button">播放</button>
-          <div class="muted small">已選：<strong id="count">0</strong></div>
-        </div>
-      </section>
-
-      <section id="pickPanel" class="panel">
-        <div class="toolbar">
-          <button id="allBtn" class="btn" type="button">全選</button>
-          <button id="noneBtn" class="btn" type="button">全不選</button>
-          <button id="only10Btn" class="btn" type="button">只選 10 個（教學）</button>
-        </div>
-        <section id="pickGrid" class="grid" aria-label="letter picker"></section>
-      </section>
-
-      <section id="playPanel" class="panel hidden">
-        <section class="card status">
-          <div>正在播放：<strong id="now">（尚未播放）</strong></div>
-          <div class="muted small" id="warn"></div>
-        </section>
-        <section id="playGrid" class="grid" aria-label="letters"></section>
-      </section>
-    </section>
-
-    <!-- Draw -->
-    <section id="drawView" class="view hidden">
-      <section class="card">
-        <h2>比手畫腳抽籤系統</h2>
-        <p class="muted">每行一個或用逗號分隔。抽到後可「移除」避免重複抽到。</p>
-      </section>
-      <!-- Memory -->
-<section id="memoryView" class="view hidden">
-  <section class="card">
-    <h2>記憶翻牌遊戲</h2>
-    <p class="muted">先選單字，再開始遊戲。</p>
-  </section>
-
-  <!-- 選單字 -->
-  <section id="memoryPickView" class="card">
-    <h3>選擇要玩的單字</h3>
-    <div id="memoryPickGrid" class="grid"></div>
-    <div class="toolbar">
-      <button id="memoryStartBtn" class="btn primary" type="button">開始遊戲</button>
-    </div>
-  </section>
-
-  <!-- 遊戲畫面 -->
-  <section id="memoryGameView" class="hidden">
-    <section class="card">
-      <h3>翻牌配對</h3>
-      <div class="muted small">點兩張牌配對</div>
-    </section>
-
-    <section id="memoryGameGrid" class="grid"></section>
-
-    <section class="card">
-      <h4>已配對</h4>
-      <div id="memoryMatched" class="grid"></div>
-    </section>
-  </section>
-</section>
-
-
-      <section class="card">
-        <textarea id="wordInput" rows="6" placeholder="例如：
-蘋果
-飛機
-happiness
-run fast"></textarea>
-
-        <div class="toolbar">
-          <button id="loadWords" class="btn" type="button">加入清單</button>
-          <button id="drawBtn" class="btn primary" type="button">🎲 抽籤</button>
-          <button id="removePicked" class="btn hidden" type="button">❌ 移除已抽到</button>
-          <button id="clearWords" class="btn" type="button">清空</button>
-          <div class="muted small">目前：<strong id="wordCount">0</strong> 個詞</div>
-        </div>
-      </section>
-
-      <section class="card result">
-        <div class="result-label muted">抽到的是：</div>
-        <div id="drawResult" class="result-word">—</div>
-      </section>
-    </section>
-  </main>
-
-  <script src="script.js?v=99"></script>
-</body>
-</html>
-
+    <button id="stopBtn" class="btn hidden" type="button">Stop</button>
+  </div>
+</header>
