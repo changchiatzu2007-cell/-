@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YL Learning System</title>
+    <title>YL Learning - 互動學習系統</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="header wrap">
-    <div class="brand-wrap" id="goHome">
-        <div class="brand-text">
-            <div class="brand-title">YL Learning</div>
-        </div>
+    <div class="brand-wrap" id="goHome" style="cursor: pointer;">
+        <div class="brand-title">YL Learning</div>
+        <div class="brand-sub">by YL studio</div>
     </div>
     <nav class="controls">
         <button class="nav-btn" id="navHome">主畫面</button>
@@ -20,51 +19,71 @@
         <button class="nav-btn" id="navDraw">比手畫腳</button>
         <button class="nav-btn" id="navMemory">記憶遊戲</button>
         
-        <div id="speedWrap" class="hidden">
-            <span style="font-size: 12px;">Speed</span>
+        <div id="speedWrap" class="speed-container hidden">
+            <span>Speed</span>
             <input id="rate" type="range" min="0.5" max="1.5" step="0.1" value="1">
         </div>
-        <button id="stopBtn" class="nav-btn hidden">Stop</button>
     </nav>
 </header>
 
 <main class="wrap">
     <section id="homeView" class="view">
-        <div class="card">
-            <h1>歡迎使用學習系統</h1>
-            <div class="grid">
-                <button class="nav-btn" id="enterLetters">🔤 字母發音</button>
-                <button class="nav-btn" id="enterDraw">🎲 比手畫腳</button>
-                <button class="nav-btn" id="enterMemory">🧠 記憶遊戲</button>
+        <div class="card hero">
+            <h1>歡迎來到學習系統</h1>
+            <p>請選擇一個模式開始練習</p>
+        </div>
+        <div class="main-grid">
+            <div class="feature-card" id="enterLetters">
+                <div class="icon">🔤</div>
+                <h3>字母發音</h3>
+            </div>
+            <div class="feature-card" id="enterDraw">
+                <div class="icon">🎲</div>
+                <h3>比手畫腳</h3>
+            </div>
+            <div class="feature-card" id="enterMemory">
+                <div class="icon">🧠</div>
+                <h3>記憶翻牌</h3>
             </div>
         </div>
     </section>
 
     <section id="lettersView" class="view hidden">
         <div class="card">
-            <h3>選擇字母</h3>
-            <div id="pickGrid" class="grid"></div>
-            <hr>
+            <h3>勾選練習字母</h3>
+            <div id="pickGrid" class="letters-grid"></div>
+        </div>
+        <div class="card">
             <h3>點擊發音</h3>
-            <div id="playGrid" class="grid"></div>
+            <div id="playGrid" class="letters-grid"></div>
         </div>
     </section>
 
     <section id="drawView" class="view hidden">
         <div class="card">
-            <textarea id="wordInput" placeholder="輸入單字(換行或逗號隔開)"></textarea>
-            <button id="loadWords" class="nav-btn">載入單字</button>
-            <button id="drawBtn" class="nav-btn">開始抽籤</button>
-            <div id="drawResult" style="font-size: 3rem; margin-top: 20px; text-align: center;">—</div>
+            <h3>輸入單字清單</h3>
+            <textarea id="wordInput" placeholder="請輸入單字，用換行或逗號隔開..."></textarea>
+            <div class="btn-group">
+                <button id="loadWords" class="action-btn">載入清單</button>
+                <button id="drawBtn" class="action-btn primary">🎲 開始抽籤</button>
+            </div>
+        </div>
+        <div class="card result-card">
+            <div id="drawResult">—</div>
         </div>
     </section>
 
     <section id="memoryView" class="view hidden">
         <div class="card">
-            <p id="memoryStatus">請選擇 4 個單字開始</p>
-            <div id="memoryPickGrid" class="grid"></div>
-            <hr>
-            <div id="memoryGameGrid" class="grid" style="grid-template-columns: repeat(4, 1fr);"></div>
+            <h3>第一步：選擇 6 個單字</h3>
+            <div id="memoryStatus" class="status-msg">請點擊下方單字進行選取</div>
+            <div id="memoryPickGrid" class="selector-grid"></div>
+        </div>
+        <div id="gameContainer" class="hidden">
+            <div class="card">
+                <h3>第二步：配對挑戰</h3>
+                <div id="memoryGameGrid" class="memory-grid"></div>
+            </div>
         </div>
     </section>
 </main>
@@ -72,5 +91,3 @@
 <script src="script.js"></script>
 </body>
 </html>
-
-
