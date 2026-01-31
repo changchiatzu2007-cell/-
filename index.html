@@ -1,138 +1,114 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>YL Learning</title>
-
-  <!-- Style -->
+  <title>YL Learning - 互動學習系統</title>
   <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
 
-<!-- ================= HEADER ================= -->
-<header class="wrap header">
+<header class="header wrap">
   <div class="brand-wrap" id="goHome" role="button" tabindex="0">
-    <img src="images/logo.svg" alt="YL studio logo" class="brand-logo">
+    <img src="images/logo.svg" alt="Logo" class="brand-logo">
     <div class="brand-text">
       <div class="brand-title">YL Learning</div>
       <div class="brand-sub">by YL studio</div>
     </div>
   </div>
 
-  <nav class="controls nav">
+  <nav class="controls">
     <button class="nav-btn active" id="navHome">主畫面</button>
     <button class="nav-btn" id="navLetters">字母發音</button>
     <button class="nav-btn" id="navDraw">比手畫腳</button>
     <button class="nav-btn" id="navMemory">記憶遊戲</button>
 
-    <!-- only for letters / memory -->
     <label class="slider hidden" id="speedWrap">
       <span>Speed</span>
-      <input id="rate" type="range" min="0.7" max="1.2" step="0.05" value="1">
+      <input id="rate" type="range" min="0.5" max="1.5" step="0.1" value="1">
     </label>
-
     <button id="stopBtn" class="btn hidden">Stop</button>
   </nav>
 </header>
 
-<!-- ================= MAIN ================= -->
 <main class="wrap">
 
-<!-- ========== HOME ========== -->
-<section id="homeView" class="view">
-  <section class="card">
-    <h1>YL Learning</h1>
-    <p class="muted">請選擇你要使用的學習系統</p>
-  </section>
+  <section id="homeView" class="view">
+    <div class="card">
+      <h1>歡迎來到 YL Learning</h1>
+      <p class="muted">請選擇一個學習模組開始練習</p>
+    </div>
 
-  <section class="grid2">
-    <button class="feature-card" id="enterLetters">
-      <div class="feature-title">字母發音系統</div>
-      <div class="feature-desc muted">音檔播放（A a）</div>
-    </button>
+    <div class="grid2">
+      <button class="feature-card" id="enterLetters">
+        <div class="feature-title">🔤 字母發音系統</div>
+        <div class="feature-desc muted">練習 A-Z 的標準發音與聽力</div>
+      </button>
 
-    <button class="feature-card" id="enterDraw">
-      <div class="feature-title">比手畫腳抽籤</div>
-      <div class="feature-desc muted">抽詞＋語音念出</div>
-    </button>
+      <button class="feature-card" id="enterDraw">
+        <div class="feature-title">🎲 比手畫腳抽籤</div>
+        <div class="feature-desc muted">隨機抽詞練習口說與肢體表達</div>
+      </button>
 
-    <button class="feature-card" id="enterMemory">
-      <div class="feature-title">記憶翻牌遊戲</div>
-      <div class="feature-desc muted">翻牌＋發音＋圖片</div>
-    </button>
-  </section>
-</section>
-
-<!-- ========== LETTERS ========== -->
-<section id="lettersView" class="view hidden">
-  <section class="card">
-    <h2>字母發音練習</h2>
-    <p class="muted">點字母播放音檔</p>
-  </section>
-
-  <section class="card">
-    <h3>選擇字母</h3>
-    <div id="pickGrid" class="grid"></div>
-  </section>
-
-  <section class="card">
-    <h3>播放</h3>
-    <div id="now" class="muted">尚未播放</div>
-    <div id="playGrid" class="grid"></div>
-  </section>
-</section>
-
-<!-- ========== DRAW / CHARADES ========== -->
-<section id="drawView" class="view hidden">
-  <section class="card">
-    <h2>比手畫腳抽籤</h2>
-    <p class="muted">每行一個或用逗號分隔</p>
-  </section>
-
-  <section class="card">
-    <textarea id="wordInput" rows="6" placeholder="apple
-run
-happiness"></textarea>
-
-    <div class="toolbar">
-      <button id="loadWords" class="btn">加入清單</button>
-      <button id="drawBtn" class="btn primary">🎲 抽籤</button>
-      <button id="removePicked" class="btn hidden">❌ 移除已抽</button>
+      <button class="feature-card" id="enterMemory">
+        <div class="feature-title">🧠 記憶翻牌遊戲</div>
+        <div class="feature-desc muted">單字與圖片配對，挑戰大腦</div>
+      </button>
     </div>
   </section>
 
-  <section class="card result">
-    <div class="result-label muted">抽到的是</div>
-    <div id="drawResult" class="result-word">—</div>
-  </section>
-</section>
+  <section id="lettersView" class="view hidden">
+    <div class="card">
+      <h2>字母發音練習</h2>
+      <p class="muted">先選擇想練習的字母，再點擊下方播放音檔</p>
+    </div>
 
-<!-- ========== MEMORY GAME ========== -->
-<section id="memoryView" class="view hidden">
+    <div class="card">
+      <h3>1. 勾選字母</h3>
+      <div id="pickGrid" class="grid"></div>
+    </div>
 
-  <!-- Pick words -->
-  <section class="card">
-    <h2>記憶翻牌遊戲</h2>
-    <p class="muted">先選單字，再開始遊戲</p>
-  </section>
-
-  <section class="card">
-    <div id="memoryPickGrid" class="grid"></div>
-  </section>
-
-  <!-- Game board -->
-  <section class="card">
-    <h3>遊戲區</h3>
-    <div id="memoryGameGrid" class="grid"></div>
+    <div class="card">
+      <h3>2. 點擊發音</h3>
+      <div id="now" class="status-msg">準備就緒</div>
+      <div id="playGrid" class="grid"></div>
+    </div>
   </section>
 
-</section>
+  <section id="drawView" class="view hidden">
+    <div class="card">
+      <h2>比手畫腳抽籤</h2>
+      <textarea id="wordInput" rows="5" placeholder="請輸入單字，用換行或逗號隔開..."></textarea>
+      <div class="toolbar">
+        <button id="loadWords" class="btn">加入清單</button>
+        <button id="drawBtn" class="btn primary">🎲 開始抽籤</button>
+      </div>
+    </div>
+
+    <div class="card result">
+      <div class="result-label muted">當前抽到：</div>
+      <div id="drawResult" class="result-word">—</div>
+    </div>
+  </section>
+
+  <section id="memoryView" class="view hidden">
+    <div class="card">
+      <h2>記憶翻牌遊戲</h2>
+      <p id="memoryStatus" class="muted">請點選下方單字加入遊戲 (需選擇 4 個)</p>
+    </div>
+
+    <div class="card">
+      <div id="memoryPickGrid" class="grid"></div>
+    </div>
+
+    <div class="card">
+      <h3>遊戲區</h3>
+      <div id="memoryGameGrid" class="grid-memory"></div>
+    </div>
+  </section>
 
 </main>
 
-<!-- ================= SCRIPT ================= -->
 <script src="main.js"></script>
 
 </body>
