@@ -1,124 +1,183 @@
 window.onload = function() {
-    console.log("系統已啟動");
-
     const $ = (id) => document.getElementById(id);
 
-    // 視圖切換
-    const views = ["homeView", "lettersView", "drawView", "memoryView"];
-    
+    // --- 資料定義 ---
+    const memoryWords = [
+        { word: "ham", img: "images/memory/ham.jpg" },
+        { word: "jam", img: "images/memory/jam.jpg" },
+        { word: "ant", img: "images/memory/ant.jpg" },
+        { word: "fan", img: "images/memory/fan.jpg" },
+        { word: "pan", img: "images/memory/pan.jpg" },
+        { word: "van", img: "images/memory/van.jpg" },
+        { word: "angry", img: "images/memory/angry.jpg" },
+        { word: "key", img: "images/memory/key.jpg" },
+        { word: "monkey", img: "images/memory/monkey.jpg" },
+        { word: "green", img: "images/memory/green.jpg" },
+        { word: "queen", img: "images/memory/queen.jpg" },
+        { word: "three", img: "images/memory/three.jpg" },
+        { word: "igloo", img: "images/memory/igloo.jpg" },
+        { word: "zoo", img: "images/memory/zoo.jpg" },
+        { word: "hungry", img: "images/memory/hungry.jpg" },
+        { word: "this", img: "images/memory/this.jpg" },
+        { word: "that", img: "images/memory/that.jpg" },
+        { word: "thirsty", img: "images/memory/thirsty.jpg" },
+        { word: "pig", img: "images/memory/pig.jpg" },
+        { word: "wig", img: "images/memory/wig.jpg" },
+        { word: "ox", img: "images/memory/ox.jpg" },
+        { word: "fox", img: "images/memory/fox.jpg" }
+    ];
+
+    // --- 系統狀態 ---
+    let chosenWords = [];
+    let flippedCards = [];
+    const targetCount = 6; // 固定選 6 個
+
+    // --- 視圖管理 ---
     function showView(targetId) {
-        console.log("切換到: " + targetId);
-        views.forEach(v => $(v).classList.add("hidden"));
-        $(targetId).classList.remove("hidden");
+        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+        $(targetId).classList.remove('hidden');
         
-        // 控制工具列顯示
-        $("speedWrap").classList.toggle("hidden", targetId === "homeView");
-        
-        if(targetId === "lettersView") renderLetters();
-        if(targetId === "memoryView") renderMemoryPick();
-    }
-
-    // --- 字母邏輯 ---
-    const letters = "abcdefghijklmnopqrstuvwxyz".split("");
-    let selected = new Set(["a","b","c","d"]);
-
-    function renderLetters() {
-        const pick = $("pickGrid");
-        const play = $("playGrid");
-        pick.innerHTML = ""; play.innerHTML = "";
-
-        letters.forEach(l => {
-            const b = document.createElement("button");
-            b.className = `nav-btn ${selected.has(l) ? 'active' : ''}`;
-            b.innerText = l.toUpperCase();
-            b.onclick = () => { selected.has(l) ? selected.delete(l) : selected.add(l); renderLetters(); };
-            pick.appendChild(b);
+        // 更新導覽按鈕狀態
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.id === 'nav' + targetId.replace('View',''));
         });
 
-        [...selected].forEach(l => {
+        // 初始化內容
+        if(targetId === 'lettersView') renderLetters();
+        if(targetId === 'memoryView') renderMemorySelector();
+    }
+
+    // --- 1. 字母練習 ---
+    let selectedLetters = new Set(['a','b','c','d']);
+    function renderLetters() {
+        const pick = $("pickGrid"), play = $("playGrid");
+        pick.innerHTML = ""; play.innerHTML = "";
+        "abcdefghijklmnopqrstuvwxyz".split("").forEach(l => {
             const b = document.createElement("button");
-            b.className = "card";
+            b.className = `nav-btn ${selectedLetters.has(l) ? 'active' : ''}`;
             b.innerText = l.toUpperCase();
             b.onclick = () => {
-                const u = new SpeechSynthesisUtterance(l);
-                u.rate = $("rate").value;
-                speechSynthesis.speak(u);
+                selectedLetters.has(l) ? selectedLetters.delete(l) : selectedLetters.add(l);
+                renderLetters();
             };
+            pick.appendChild(b);
+        });
+        [...selectedLetters].sort().forEach(l => {
+            const b = document.createElement("div");
+            b.className = "select-item active"; b.innerText = l.toUpperCase();
+            b.onclick = () => speak(l);
             play.appendChild(b);
         });
     }
 
-    // --- 比手畫腳 ---
-    let pool = [];
+    // --- 2. 抽籤系統 ---
+    let drawPool = [];
     $("loadWords").onclick = () => {
-        pool = $("wordInput").value.split(/[\n,]/).map(w => w.trim()).filter(Boolean);
-        alert("載入成功，共 " + pool.length + " 個");
+        drawPool = $("wordInput").value.split(/[\n,]/).map(w => w.trim()).filter(Boolean);
+        alert(`成功載入 ${drawPool.length} 個單字`);
     };
     $("drawBtn").onclick = () => {
-        if(!pool.length) return alert("請先輸入單字");
-        const res = pool[Math.floor(Math.random() * pool.length)];
+        if(drawPool.length === 0) return alert("請先輸入單字");
+        const res = drawPool[Math.floor(Math.random() * drawPool.length)];
         $("drawResult").innerText = res;
-        const u = new SpeechSynthesisUtterance(res);
-        u.rate = $("rate").value;
-        speechSynthesis.speak(u);
+        speak(res);
     };
 
-    // --- 記憶遊戲 ---
-    let chosen = [];
-    const memoryData = [
-        {w:"Apple", i:"https://picsum.photos/100/100?random=1"},
-        {w:"Banana", i:"https://picsum.photos/100/100?random=2"},
-        {w:"Cat", i:"https://picsum.photos/100/100?random=3"},
-        {w:"Dog", i:"https://picsum.photos/100/100?random=4"}
-    ];
-
-    function renderMemoryPick() {
+    // --- 3. 記憶遊戲選取器 ---
+    function renderMemorySelector() {
         const grid = $("memoryPickGrid");
+        const status = $("memoryStatus");
         grid.innerHTML = "";
-        memoryData.forEach(item => {
-            const b = document.createElement("button");
-            b.className = "nav-btn";
-            b.innerText = item.w;
-            b.onclick = () => {
-                if(chosen.length < 4) {
-                    chosen.push(item);
-                    if(chosen.length === 4) startMemory();
-                }
-            };
-            grid.appendChild(b);
-        });
-    }
+        $("gameContainer").classList.add('hidden');
 
-    function startMemory() {
-        const grid = $("memoryGameGrid");
-        grid.innerHTML = "";
-        let cards = [...chosen.map(c=>({v:c.w, type:'t'})), ...chosen.map(c=>({v:c.i, type:'i', w:c.w}))];
-        cards.sort(() => Math.random() - 0.5);
-
-        cards.forEach(c => {
+        memoryWords.forEach(item => {
+            const isSelected = chosenWords.some(c => c.word === item.word);
             const div = document.createElement("div");
-            div.className = "card";
-            div.style.height = "80px";
-            div.innerText = "?";
+            div.className = `select-item ${isSelected ? 'active' : ''}`;
+            div.innerText = item.word;
             div.onclick = () => {
-                if(c.type === 't') div.innerText = c.v;
-                else div.innerHTML = `<img src="${c.v}" style="width:100%">`;
-                const u = new SpeechSynthesisUtterance(c.w || c.v);
-                speechSynthesis.speak(u);
+                if(isSelected) {
+                    chosenWords = chosenWords.filter(c => c.word !== item.word);
+                } else if(chosenWords.length < targetCount) {
+                    chosenWords.push(item);
+                }
+                renderMemorySelector();
             };
             grid.appendChild(div);
         });
-        chosen = [];
+
+        const startBtn = document.createElement("button");
+        startBtn.className = `start-btn ${chosenWords.length === targetCount ? 'ready' : ''}`;
+        startBtn.innerText = chosenWords.length === targetCount ? "🎮 開始挑戰" : `請選滿 ${targetCount} 個 (${chosenWords.length}/${targetCount})`;
+        startBtn.onclick = () => { if(chosenWords.length === targetCount) startMemoryGame(); };
+        grid.appendChild(startBtn);
     }
 
-    // 綁定所有導覽按鈕
-    $("navHome").onclick = () => showView("homeView");
-    $("navLetters").onclick = () => showView("lettersView");
-    $("navDraw").onclick = () => showView("drawView");
-    $("navMemory").onclick = () => showView("memoryView");
-    $("enterLetters").onclick = () => showView("lettersView");
-    $("enterDraw").onclick = () => showView("drawView");
-    $("enterMemory").onclick = () => showView("memoryView");
-    $("goHome").onclick = () => showView("homeView");
-    $("stopBtn").onclick = () => speechSynthesis.cancel();
+    // --- 4. 翻牌遊戲核心 ---
+    function startMemoryGame() {
+        $("gameContainer").classList.remove('hidden');
+        const grid = $("memoryGameGrid");
+        grid.innerHTML = "";
+        
+        let deck = [
+            ...chosenWords.map(c => ({...c, display: c.word, type: 'text'})),
+            ...chosenWords.map(c => ({...c, display: c.img, type: 'img'}))
+        ];
+        deck.sort(() => Math.random() - 0.5);
+
+        deck.forEach(data => {
+            const card = document.createElement("div");
+            card.className = "memory-card";
+            card.innerHTML = `<div class="memory-inner">
+                <div class="face back">?</div>
+                <div class="face front">${data.type === 'img' ? `<img src="${data.display}" onerror="this.src='https://via.placeholder.com/150?text=${data.word}'">` : `<span>${data.display}</span>`}</div>
+            </div>`;
+            card.onclick = () => {
+                if(flippedCards.length < 2 && !card.classList.contains('flipped')) {
+                    card.classList.add('flipped');
+                    flippedCards.push({el: card, data: data});
+                    if(flippedCards.length === 2) checkMatch();
+                }
+            };
+            grid.appendChild(card);
+        });
+        $("gameContainer").scrollIntoView({behavior: 'smooth'});
+    }
+
+    function checkMatch() {
+        const [c1, c2] = flippedCards;
+        if(c1.data.word === c2.data.word) {
+            speak(c1.data.word);
+            setTimeout(() => {
+                c1.el.classList.add('matched');
+                c2.el.classList.add('matched');
+                flippedCards = [];
+            }, 600);
+        } else {
+            setTimeout(() => {
+                c1.el.classList.remove('flipped');
+                c2.el.classList.remove('flipped');
+                flippedCards = [];
+            }, 1000);
+        }
+    }
+
+    function speak(text) {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'en-US';
+        u.rate = parseFloat($("rate").value);
+        speechSynthesis.speak(u);
+    }
+
+    // --- 基礎事件綁定 ---
+    $("navHome").onclick = () => showView('homeView');
+    $("navLetters").onclick = () => showView('lettersView');
+    $("navDraw").onclick = () => showView('drawView');
+    $("navMemory").onclick = () => showView('memoryView');
+    $("enterLetters").onclick = () => showView('lettersView');
+    $("enterDraw").onclick = () => showView('drawView');
+    $("enterMemory").onclick = () => showView('memoryView');
+    $("goHome").onclick = () => showView('homeView');
+
+    showView('homeView');
 };
