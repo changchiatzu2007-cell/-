@@ -1,7 +1,7 @@
 window.onload = function() {
     const $ = (id) => document.getElementById(id);
 
-    // --- 記憶遊戲單字清單 (22個) ---
+    // --- 1. 資料定義 (22個單字) ---
     const memoryWords = [
         { word: "ham", img: "images/memory/ham.jpg" }, { word: "jam", img: "images/memory/jam.jpg" },
         { word: "ant", img: "images/memory/ant.jpg" }, { word: "fan", img: "images/memory/fan.jpg" },
@@ -16,53 +16,71 @@ window.onload = function() {
         { word: "ox", img: "images/memory/ox.jpg" }, { word: "fox", img: "images/memory/fox.jpg" }
     ];
 
-    // --- 字母發音功能 ---
+    // --- 2. 字母發音優化 (加入預載緩存) ---
     let selectedLetters = new Set(['a','b','c','d']); 
+    const audioCache = {}; // 用來存放預載好的 Audio 物件
 
     function renderLetters() {
         const pick = $("pickGrid"), play = $("playGrid");
         if (!pick || !play) return;
         pick.innerHTML = ""; play.innerHTML = "";
 
-        // 生成 A-Z 勾選按鈕 (包含大小寫)
         "abcdefghijklmnopqrstuvwxyz".split("").forEach(l => {
             const b = document.createElement("button");
             b.className = `nav-btn ${selectedLetters.has(l) ? 'active' : ''}`;
-            b.innerText = `${l.toUpperCase()} ${l}`; // 顯示 Aa
+            b.innerText = `${l.toUpperCase()} ${l}`;
             b.onclick = () => {
                 selectedLetters.has(l) ? selectedLetters.delete(l) : selectedLetters.add(l);
+                if (selectedLetters.has(l)) preloadAudio(l); // 勾選時立即預載
                 renderLetters();
             };
             pick.appendChild(b);
         });
 
-        // 生成發音按鈕 (包含大小寫)
         [...selectedLetters].sort().forEach(l => {
             const b = document.createElement("div");
             b.className = "select-item active"; 
             b.style.fontSize = "1.5rem";
-            b.innerText = `${l.toUpperCase()} ${l}`; // 顯示 Aa
+            b.innerText = `${l.toUpperCase()} ${l}`;
             b.onclick = () => playLetterAudio(l);
             play.appendChild(b);
+            preloadAudio(l); // 渲染播放按鈕時也確保預載
         });
     }
 
-    // 播放音檔邏輯
+    // 預載音檔函式
+    function preloadAudio(letter) {
+        if (!audioCache[letter]) {
+            const audio = new Audio(`audio/${letter}.mp3`);
+            audio.preload = "auto"; // 強制瀏覽器儘早下載
+            audioCache[letter] = audio;
+        }
+    }
+
+    // 播放音檔 (優化：重置播放時間以達到快速響應)
     function playLetterAudio(letter) {
-        const audioPath = `audio/${letter}.mp3`;
-        const audio = new Audio(audioPath);
+        let audio = audioCache[letter];
         
+        // 如果還沒載入，現場建立一個
+        if (!audio) {
+            audio = new Audio(`audio/${letter}.mp3`);
+            audioCache[letter] = audio;
+        }
+
         // 設定播放速率 (對應拉桿)
         const speed = $("rate") ? $("rate").value : 1;
         audio.playbackRate = speed;
 
+        // 重要：如果音檔正在播，先拉回開頭，避免連點沒反應
+        audio.currentTime = 0; 
+        
         audio.play().catch(() => {
-            console.log(`找不到音檔 ${audioPath}，切換至 TTS`);
-            speak(letter); // 備案：使用電腦語音
+            console.log(`音檔播放失敗，切換至 TTS`);
+            speak(letter); 
         });
     }
 
-    // 通用語音功能 (TTS)
+    // --- 3. 語音功能 (TTS) ---
     function speak(text) {
         speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
@@ -71,7 +89,7 @@ window.onload = function() {
         speechSynthesis.speak(u);
     }
 
-    // --- 記憶遊戲邏輯 (略，保持與上次一致) ---
+    // --- 4. 記憶遊戲邏輯 ---
     let chosenWords = [];
     let flippedCards = [];
     const targetCount = 6;
@@ -81,7 +99,7 @@ window.onload = function() {
         const status = $("memoryStatus");
         if (!grid) return;
         grid.innerHTML = "";
-        $("gameContainer").classList.add('hidden');
+        $("gameContainer")?.classList.add('hidden');
 
         memoryWords.forEach(item => {
             const isSelected = chosenWords.some(c => c.word === item.word);
@@ -107,8 +125,9 @@ window.onload = function() {
     }
 
     function startMemoryGame() {
-        $("gameContainer").classList.remove('hidden');
+        $("gameContainer")?.classList.remove('hidden');
         const grid = $("memoryGameGrid");
+        if (!grid) return;
         grid.innerHTML = "";
         let deck = [
             ...chosenWords.map(c => ({...c, display: c.word, type: 'text'})),
@@ -132,30 +151,3 @@ window.onload = function() {
                             speak(c1.data.word);
                             setTimeout(() => { c1.el.classList.add('matched'); c2.el.classList.add('matched'); flippedCards = []; }, 600);
                         } else {
-                            setTimeout(() => { c1.el.classList.remove('flipped'); c2.el.classList.remove('flipped'); flippedCards = []; }, 1000);
-                        }
-                    }
-                }
-            };
-            grid.appendChild(card);
-        });
-        $("gameContainer").scrollIntoView({behavior: 'smooth'});
-    }
-
-    // --- 視圖管理與綁定 ---
-    function showView(id) {
-        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-        $(id).classList.remove('hidden');
-        if(id === 'lettersView') renderLetters();
-        if(id === 'memoryView') renderMemorySelector();
-    }
-
-    $("navHome").onclick = () => showView('homeView');
-    $("navLetters").onclick = () => showView('lettersView');
-    $("navMemory").onclick = () => showView('memoryView');
-    $("enterLetters").onclick = () => showView('lettersView');
-    $("enterMemory").onclick = () => showView('memoryView');
-    $("goHome").onclick = () => showView('homeView');
-
-    showView('homeView');
-};
